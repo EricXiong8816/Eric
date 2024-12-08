@@ -1,10 +1,14 @@
-import * as React from 'react';
+import React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { Paper, Button } from "@mui/material";
-import { AutoAwesome, FormatListBulleted, VpnKey, Usb, CloudQueue, Code } from "@mui/icons-material";
+
+import { Paper, Button, useTheme } from "@mui/material";
+import { AutoAwesome, FormatListBulleted, VpnKey, Usb, Article, CloudQueue,Code, } from "@mui/icons-material";
+
+
 import { apiUrl } from "../../apiConfig";
+
 
 interface MainMenuProps {
   value: string;
@@ -12,83 +16,93 @@ interface MainMenuProps {
 }
 
 export const MainMenu = ({ value = 'recordings', handleChangeContent }: MainMenuProps) => {
+  const theme = useTheme();
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     handleChangeContent(newValue);
   };
+
+  // Define colors based on theme mode
+  const defaultcolor = theme.palette.mode === 'light' ? 'black' : 'white';
+  const selectedPink = '#FF00C3';
 
   return (
     <Paper
       sx={{
         height: 'auto',
         width: '250px',
-        backgroundColor: 'white',
+        backgroundColor: theme.palette.background.paper,
         paddingTop: '0.5rem',
+        color: defaultcolor,
       }}
       variant="outlined"
       square
     >
-      <Box sx={{
-        width: '100%',
-        paddingBottom: '1rem',
-      }}>
+      <Box sx={{ width: '100%', paddingBottom: '1rem' }}>
         <Tabs
           value={value}
           onChange={handleChange}
-          textColor="primary"
-          indicatorColor="primary"
           orientation="vertical"
-          sx={{ alignItems: 'flex-start' }}
-        >
-          <Tab
-            sx={{
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: '#ff00c3', // Set the custom color for the indicator here
+              width: '2px',               // Ensure the indicator width is 2px as per your requirement
+              right: 0,                   // Position it on the right if needed
+            },
+          }}
+          sx={{
+            alignItems: 'flex-start',
+            '& .MuiTab-root': {
+              color: defaultcolor, 
+              textTransform: 'none', // Non-capitalized text
+              fontSize: 'medium',
               justifyContent: 'flex-start',
               textAlign: 'left',
-              fontSize: 'medium',
-            }}
+              '&.Mui-selected': {
+                color: selectedPink, // Darker pink for selected tab
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: '#ff00c3', // Custom color for the indicator
+              },
+
+            },
+          }}
+        >
+          <Tab
             value="recordings"
             label="Robots"
             icon={<AutoAwesome />}
             iconPosition="start"
+            
           />
           <Tab
-            sx={{
-              justifyContent: 'flex-start',
-              textAlign: 'left',
-              fontSize: 'medium',
-            }}
             value="runs"
             label="Runs"
             icon={<FormatListBulleted />}
             iconPosition="start"
+           
           />
           <Tab
-            sx={{
-              justifyContent: 'flex-start',
-              textAlign: 'left',
-              fontSize: 'medium',
-            }}
             value="proxy"
             label="Proxy"
             icon={<Usb />}
             iconPosition="start"
+            
           />
           <Tab
-            sx={{
-              justifyContent: 'flex-start',
-              textAlign: 'left',
-              fontSize: 'medium',
-            }}
             value="apikey"
             label="API Key"
             icon={<VpnKey />}
             iconPosition="start"
+            
           />
         </Tabs>
         <hr />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}>
-          <Button href={`${apiUrl}/api-docs/`} target="_blank" rel="noopener noreferrer" sx={buttonStyles} startIcon={<Code />}>
-            Website To API
+
+          <Button href="/api-docs" target="_blank" rel="noopener noreferrer" sx={buttonStyles} startIcon={<Article />}>
+            API Docs
+
           </Button>
           <Button href="https://forms.gle/hXjgqDvkEhPcaBW76" target="_blank" rel="noopener noreferrer" sx={buttonStyles} startIcon={<CloudQueue />}>
             Join Maxun Cloud
@@ -97,7 +111,7 @@ export const MainMenu = ({ value = 'recordings', handleChangeContent }: MainMenu
       </Box>
     </Paper>
   );
-}
+};
 
 const buttonStyles = {
   justifyContent: 'flex-start',
@@ -109,5 +123,10 @@ const buttonStyles = {
   display: 'flex',
   alignItems: 'center',
   textTransform: 'none',
-  color: '#6C6C6C !important',
+  color: 'inherit',
+  backgroundColor: 'transparent',
+  '&:hover': {
+    backgroundColor: 'rgba(255, 0, 195, 0.1)',
+    color: '#ff00c3',
+  },
 };

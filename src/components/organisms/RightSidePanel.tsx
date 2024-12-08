@@ -22,6 +22,7 @@ import { emptyWorkflow } from "../../shared/constants";
 import { getActiveWorkflow } from "../../api/workflow";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ActionDescriptionBox from '../molecules/ActionDescriptionBox';
+import { useThemeMode } from '../../context/theme-provider';
 
 const fetchWorkflow = (id: string, callback: (response: WorkflowFile) => void) => {
   getActiveWorkflow(id).then(
@@ -394,15 +395,32 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
      // Disable the button if there are no valid list selectors or if there are unconfirmed list text fields
     return !hasValidListSelector || hasUnconfirmedListTextFields;
   }, [captureStage, browserSteps, hasUnconfirmedListTextFields]);
-
+  
+  const theme = useThemeMode();
+  const isDarkMode = theme.darkMode;
   return (
-    <Paper sx={{ height: '520px', width: 'auto', alignItems: "center", background: 'inherit' }} id="browser-actions" elevation={0}>
+    <Paper
+      sx={{
+        borderRadius: '8px 8px 0px 0px', // Slightly more rounded corners for a smoother look
+        height: '520px',
+        width: 'auto',
+        alignItems: "center",
+        padding: '16px', // Add padding for spacing inside the component
+        background: isDarkMode
+          ? 'linear-gradient(135deg, #1E2124 0%, #292C2F 100%)'  // Subtle gradient for dark mode
+          : 'linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%)', // Subtle gradient for light mode
+        color: isDarkMode ? '#E0E0E0' : '#333333', // Adjusted color for better contrast
+        // Smooth transition for shadows and background changes
+      }}
+      id="browser-actions"
+      elevation={0}
+    >
       {/* <SimpleBox height={60} width='100%' background='lightGray' radius='0%'>
         <Typography sx={{ padding: '10px' }}>Last action: {` ${lastAction}`}</Typography>
       </SimpleBox> */}
-      <ActionDescriptionBox />
-      <Box display="flex" flexDirection="column" gap={2} style={{ margin: '13px' }}>
-        {!getText && !getScreenshot && !getList && showCaptureList && <Button variant="contained" onClick={startGetList}>Capture List</Button>}
+      <ActionDescriptionBox  isDarkMode={isDarkMode} />
+      <Box display="flex" flexDirection="column" gap={2} style={{ margin: '13px',background: isDarkMode?'#1E2124': 'inherit',color: isDarkMode ? 'white' : 'inherit' }}>
+        {!getText && !getScreenshot && !getList && showCaptureList && <Button variant="contained" sx={{backgroundColor:"#ff00c3",color:`${isDarkMode?'white':'black'}`}}  onClick={startGetList}>Capture List</Button>}
         {getList && (
           <>
             <Box display="flex" justifyContent="space-between" gap={2} style={{ margin: '15px' }}>
@@ -431,7 +449,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
         )}
         {showLimitOptions && (
           <FormControl>
-            <FormLabel>
+            <FormLabel style={{ marginBottom: '10px', background: isDarkMode ? "#1E2124" : 'white', color: isDarkMode ? "white" : 'black' }}>
               <h4>What is the maximum number of rows you want to extract?</h4>
             </FormLabel>
             <RadioGroup
@@ -457,9 +475,11 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
                     marginLeft: '10px',
                     '& input': {
                     padding: '10px',
-                    background: 'white',
+                    
                     },
-                    width: '150px', // Ensure the text field does not go outside the panel
+                    width: '150px',
+                    background: isDarkMode ? "#1E2124" : 'white',
+                    color: isDarkMode ? "white" : 'black', // Ensure the text field does not go outside the panel
                   }}
                   />
                 )}
@@ -467,7 +487,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
             </RadioGroup>
           </FormControl>
         )}
-        {!getText && !getScreenshot && !getList && showCaptureText && <Button variant="contained" onClick={startGetText}>Capture Text</Button>}
+        {!getText && !getScreenshot && !getList && showCaptureText && <Button variant="contained" sx={{backgroundColor:"#ff00c3",color:`${isDarkMode?'white':'black'}`}} onClick={startGetText}>Capture Text</Button>}
         {getText &&
           <>
             <Box display="flex" justifyContent="space-between" gap={2} style={{ margin: '15px' }}>
@@ -476,7 +496,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
             </Box>
           </>
         }
-        {!getText && !getScreenshot && !getList && showCaptureScreenshot && <Button variant="contained" onClick={startGetScreenshot}>Capture Screenshot</Button>}
+        {!getText && !getScreenshot && !getList && showCaptureScreenshot && <Button variant="contained"  sx={{backgroundColor:"#ff00c3",color:`${isDarkMode?'white':'black'}`}} onClick={startGetScreenshot}>Capture Screenshot</Button>}
         {getScreenshot && (
           <Box display="flex" flexDirection="column" gap={2}>
             <Button variant="contained" onClick={() => captureScreenshot(true)}>Capture Fullpage</Button>
@@ -487,7 +507,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
       </Box>
       <Box>
         {browserSteps.map(step => (
-          <Box key={step.id} onMouseEnter={() => handleMouseEnter(step.id)} onMouseLeave={() => handleMouseLeave(step.id)} sx={{ padding: '10px', margin: '11px', borderRadius: '5px', position: 'relative', background: 'white' }}>
+          <Box key={step.id} onMouseEnter={() => handleMouseEnter(step.id)} onMouseLeave={() => handleMouseLeave(step.id)} sx={{ padding: '10px', margin: '11px', borderRadius: '5px', position: 'relative', background: isDarkMode ? "#1E2124" : 'white', color: isDarkMode ? "white" : 'black' }}>
             {
               step.type === 'text' && (
                 <>
@@ -508,6 +528,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
                         </InputAdornment>
                       )
                     }}
+                    sx={{ background: isDarkMode ? "#1E2124" : 'white', color: isDarkMode ? "white" : 'black' }}
                   />
                   <TextField
                     label="Data"
@@ -522,6 +543,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
                         </InputAdornment>
                       )
                     }}
+                    
                   />
                   {!confirmedTextSteps[step.id] && (
                     <Box display="flex" justifyContent="space-between" gap={2}>
@@ -543,7 +565,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
               <>
                 <Typography>List Selected Successfully</Typography>
                 {Object.entries(step.fields).map(([key, field]) => (
-                  <Box key={key}>
+                  <Box key={key} sx={{ padding: '10px', margin: '11px', borderRadius: '5px', position: 'relative', background: `${isDarkMode ? "#1E2124" : 'white'}` }}>
                     <TextField
                       label="Field Label"
                       value={field.label || ''}
@@ -558,6 +580,8 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
                           </InputAdornment>
                         )
                       }}
+
+                      
                     />
                     <TextField
                       label="Field Data"
@@ -572,6 +596,7 @@ export const RightSidePanel: React.FC<RightSidePanelProps> = ({ onFinishCapture 
                           </InputAdornment>
                         )
                       }}
+                      
                     />
                     {!confirmedListTextFields[step.id]?.[key] && (
                       <Box display="flex" justifyContent="space-between" gap={2}>
