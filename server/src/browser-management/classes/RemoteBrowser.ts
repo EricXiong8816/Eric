@@ -15,6 +15,7 @@ import { InterpreterSettings, RemoteBrowserOptions } from "../../types";
 import { WorkflowGenerator } from "../../workflow-management/classes/Generator";
 import { WorkflowInterpreter } from "../../workflow-management/classes/Interpreter";
 import { getDecryptedProxyConfig } from '../../routes/proxy';
+import { getInjectableScript } from 'idcac-playwright';
 chromium.use(stealthPlugin());
 
 
@@ -166,11 +167,15 @@ export class RemoteBrowser {
         this.context = await this.browser.newContext(contextOptions);
         this.currentPage = await this.context.newPage();
 
-        this.currentPage.on('framenavigated', (frame) => {
+        this.currentPage.on('framenavigated', (frame) => {   
             if (frame === this.currentPage?.mainFrame()) {
                 this.socket.emit('urlChanged', this.currentPage.url());
             }
         });
+
+        this.currentPage.on('load', (page) => {
+            page.evaluate(getInjectableScript())
+        })
 
         // await this.currentPage.setExtraHTTPHeaders({
         //     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -376,6 +381,10 @@ export class RemoteBrowser {
                 }
             });
 
+            this.currentPage.on('load', (page) => {
+                page.evaluate(getInjectableScript())
+            })
+
             //await this.currentPage.setViewportSize({ height: 400, width: 900 })
             this.client = await this.currentPage.context().newCDPSession(this.currentPage);
             this.socket.emit('urlChanged', this.currentPage.url());
@@ -407,6 +416,10 @@ export class RemoteBrowser {
                     this.socket.emit('urlChanged', this.currentPage.url());
                 }
             });
+
+            this.currentPage.on('load', (page) => {
+                page.evaluate(getInjectableScript())
+            })
             // this.currentPage.on('load', (page) => {
             //     this.socket.emit('urlChanged', page.url());
             // })
